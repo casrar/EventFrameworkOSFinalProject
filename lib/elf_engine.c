@@ -66,13 +66,35 @@ elf_status_t elf_main(elf_handler_t handler) {
 
 // creates new event loop if possible
 elf_status_t elf_init(uint32_t *ref_loop_id, elf_handler_t handler) {
+    
+    pthread_mutex_lock(&elf_loop_lock);
+
+    for(int i = 0; i < sizeof(elf_loops); i++){
+        if(elf_loops[i]->id = ref_loop_id){
+            pthread_mutex_unlock(&elf_loop_lock);
+            return ELF_ERROR;
+        }
+        elf_loop_new(NULL,ref_loop_id,handler);
+        pthread_mutex_unlock(&elf_loop_lock);
+    }
     return ELF_OK;
 }
 
 
 // ends event loop if possible
 elf_status_t elf_fini(uint32_t loop_id) {
-    return ELF_OK;
+
+    pthread_mutex_lock(&elf_loop_lock);
+
+    for(int i = 0; i < sizeof(elf_loops); i++){
+        if(elf_loops[i]->id = loop_id){
+            elf_loops[i]->state = 2;
+            pthread_mutex_unlock(&elf_loop_lock);
+            return ELF_OK;
+        }
+    }
+    pthread_mutex_unlock(&elf_loop_lock);
+    return ELF_ERROR;
 }
 
 
