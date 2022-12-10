@@ -55,12 +55,10 @@ elf_status_t elf_queue_enqueue(elf_queue_t queue, elf_event_t event) {
     if ((*queue).size >= (*queue).cap) {
         return ELF_FULL;
     }
-    //pthread_mutex_lock(&(*queue).queue_mutex); // Lock
     (*queue).events[(*queue).size] = event; // Add event to events []
     (*queue).size++; // Increase size
     (*queue).queue_tail++; // Increase tail
     pthread_cond_signal(&(*queue).queue_empty); // Signal events ! empty
-    //pthread_mutex_unlock(&(*queue).queue_mutex); // Unlock
     return ELF_OK;
 }
 
@@ -68,11 +66,10 @@ elf_status_t elf_queue_enqueue(elf_queue_t queue, elf_event_t event) {
  * Dequeues a void pointer. If the queue is empty, the function BLOCKS. Return ELF_OK.
  */
 elf_status_t elf_queue_dequeue(elf_queue_t queue, elf_event_t * ref_event) {
-    // TODO
+    pthread_mutex_lock(&(*queue).queue_mutex); 
     while ((*queue).size <= 0) {
         pthread_cond_wait(&(*queue).queue_empty, &(*queue).queue_mutex); // Waits till event in queue
     }
-    pthread_mutex_lock(&(*queue).queue_mutex); // If item in queue lock
     *ref_event = (*queue).events[(*queue).queue_tail]; // Sef ref_event to tail
     (*queue).size--;
     (*queue).queue_tail--;
