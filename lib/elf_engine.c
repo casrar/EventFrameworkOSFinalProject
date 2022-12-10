@@ -30,6 +30,7 @@ void * elf_loop_routine(void * id) {
     while (1) {
         // dequeue message or block
         // TODO
+        elf_queue_dequeue(loop->queue, &event);
 
         // invoke registered event handler callback
         status = loop->handler(loop->id, event);
