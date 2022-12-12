@@ -58,6 +58,9 @@ elf_status_t elf_main(elf_handler_t handler) {
     elf_loops_valid[0] = true;
     elf_num_loops += 1;
 
+    elf_event_t e = elf_event_token();
+    elf_send(0, e);
+
     status = elf_loop_start(elf_loops[0]);
     if (status != ELF_OK)
         return status;

@@ -59,6 +59,7 @@ elf_status_t handler_main(uint32_t self_id, elf_event_t event) {
 
 
 int main() {
+    printf("gu");
     elf_main(handler_main); // assume, this blocks main thread
     return 0;
 }
