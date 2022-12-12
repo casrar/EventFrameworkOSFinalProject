@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 // global state
 size_t elf_num_loops;
@@ -44,6 +45,7 @@ void * elf_loop_routine(void * id) {
 
 
 elf_status_t elf_main(elf_handler_t handler) {
+    printf("start");
     assert(elf_num_loops == 0);
     assert(handler != NULL);
 
@@ -91,38 +93,22 @@ elf_status_t elf_init(uint32_t *ref_loop_id, elf_handler_t handler) {
 
 // ends event loop if possible
 elf_status_t elf_fini(uint32_t loop_id) {
-
     pthread_mutex_lock(&elf_loop_lock);
-
-    for(int i = 0; i < sizeof(elf_loops); i++){
-        if(elf_loops[i]->id = loop_id){
-            elf_loops[i]->state = 2;
-            pthread_mutex_unlock(&elf_loop_lock);
-            return ELF_OK;
-        }
-    }
+    free(elf_loops[loop_id]);
     pthread_mutex_unlock(&elf_loop_lock);
-    return ELF_ERROR;
+    return ELF_OK;
 }
 
 
 // sends an event to an event loop if possible
 elf_status_t elf_send(uint32_t loop_id, elf_event_t event) {
+    elf_queue_enqueue(elf_loops[loop_id]->queue, event);
     return ELF_OK;
 }
 
 
-//elf_status_t elf_event_new(elf_event_t *ref_event) {
-//    assert(ref_event != NULL);
-//    assert(*ref_event == NULL);
-//
-//    *ref_event = calloc(1, sizeof(struct elf_event_s));
-//    // TODO
-//    return (*ref_event == NULL) ? ELF_ERROR : ELF_OK;
-//}
-
-
 elf_status_t elf_loop_new(elf_loop_t *ref_loop, uint32_t id, elf_handler_t handler) {
+    printf("new loop created");
     assert(ref_loop != NULL);
     assert(*ref_loop == NULL);
     assert(handler != NULL);

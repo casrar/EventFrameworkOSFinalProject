@@ -27,9 +27,6 @@ struct elf_loop_s {
 };
 typedef struct elf_loop_s * elf_loop_t;
 
-struct elf_event_s {
-    void *data;
-};
 
 elf_status_t elf_loop_new(elf_loop_t *ref_loop, uint32_t id, elf_handler_t handler);
 elf_status_t elf_loop_start(elf_loop_t loop);

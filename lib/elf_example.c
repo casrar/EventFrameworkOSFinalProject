@@ -1,3 +1,4 @@
+#include "elf_internal.h"
 #include "elf_public.h"
 #include <stdio.h>
 
@@ -53,7 +54,7 @@ elf_status_t handler_main(uint32_t self_id, elf_event_t event) {
     elf_send(ping_id, elf_event_loop_id(pong_id));
     elf_send(pong_id, elf_event_loop_id(ping_id));
 
-    return ELF_ERROR; // TODO: change to ELF_OK
+    return ELF_OK; // TODO: change to ELF_OK
 }
 
 
