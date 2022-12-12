@@ -71,11 +71,18 @@ elf_status_t elf_init(uint32_t *ref_loop_id, elf_handler_t handler) {
     pthread_mutex_lock(&elf_loop_lock);
 
     for(int i = 0; i < sizeof(elf_loops); i++){
-        if(elf_loops[i]->id = ref_loop_id){
+        if(elf_loops[i]->id = *ref_loop_id){
             pthread_mutex_unlock(&elf_loop_lock);
             return ELF_ERROR;
         }
-        elf_loop_new(NULL,ref_loop_id,handler);
+        elf_status_t out = elf_loop_new(elf_loops + *ref_loop_id, *ref_loop_id,handler);
+        if(out != ELF_OK){
+            return out;
+        }
+        elf_status_t out2 = elf_loop_start(elf_loops[*ref_loop_id]);
+        if(out != ELF_OK){
+            return out2;
+        }
         pthread_mutex_unlock(&elf_loop_lock);
     }
     return ELF_OK;
