@@ -1,6 +1,8 @@
 #include "elf_internal.h"
 #include "elf_public.h"
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 struct {
     uint32_t other_loop;
@@ -13,6 +15,10 @@ elf_status_t handler_ping(uint32_t self_id, elf_event_t event) {
         state_ping.other_loop = event.value.loop_id;
         state_ping.count = 17;
     } else if (state_ping.count == 0) {
+        elf_fini(state_ping.other_loop);
+		elf_fini(self_id);
+        elf_send(0, elf_event_token());
+        exit(0);
         return ELF_OK; // drop ball
     }
 
@@ -35,7 +41,8 @@ elf_status_t handler_pong(uint32_t self_id, elf_event_t event) {
     }
 
     printf("  pong\n");
-    elf_send(state_ping.other_loop, elf_event_token());
+    sleep(1);
+    elf_send(state_pong.other_loop, elf_event_token());
 
     return ELF_OK;
 }
@@ -45,8 +52,9 @@ elf_status_t handler_main(uint32_t self_id, elf_event_t event) {
     // assume, we are triggered at least once
     printf("handler_main(): triggered\n");
     
-    uint32_t ping_id = UINT32_MAX;
-    uint32_t pong_id = UINT32_MAX;
+
+    uint32_t ping_id = 1;
+    uint32_t pong_id = 2;
 
     elf_init(&ping_id, handler_ping);
     elf_init(&pong_id, handler_pong);
@@ -59,7 +67,6 @@ elf_status_t handler_main(uint32_t self_id, elf_event_t event) {
 
 
 int main() {
-    printf("gu");
     elf_main(handler_main); // assume, this blocks main thread
     return 0;
 }
