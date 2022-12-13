@@ -1,5 +1,5 @@
 build:
-	@gcc -std=c11 -pedantic elf_engine.c elf_queue.c elf_example.c -o example -lpthread
+	@gcc -std=c11 -pedantic elf_example.c -L. elf_lib.a -lpthread -o example
 
 run:
 	@./example
